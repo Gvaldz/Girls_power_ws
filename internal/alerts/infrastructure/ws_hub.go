@@ -24,14 +24,12 @@ func (h *Hub) Register(userID int, conn *websocket.Conn) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	h.Clients[userID] = &ConnectedClient{Conn: conn}
-	log.Printf("Usuario %d conectado\n", userID)
 }
 
 func (h *Hub) Unregister(userID int) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	delete(h.Clients, userID)
-	log.Printf("Usuario %d desconectado\n", userID)
 }
 
 func (h *Hub) NotifyUser(usuarioID int, event string, payload interface{}) {

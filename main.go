@@ -4,13 +4,18 @@ import (
 	"log"
 	"net/http"
 	"os"
-
+	"github.com/joho/godotenv"
 	"ws-server/internal/alerts/application"
 	"ws-server/internal/alerts/infrastructure"
 )
 
 func main() {
-	jwtSecret := os.Getenv("JWT_SECRET")
+	    err := godotenv.Load()
+    if err != nil {
+        log.Fatal("Error cargando .env")
+    }
+	
+    jwtSecret := os.Getenv("JWT_SECRET")
 
 	hub := infrastructure.NewHub()
 	processAlertUC := application.NewProcessAlertUseCase(hub)

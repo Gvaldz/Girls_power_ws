@@ -1,8 +1,9 @@
 package application
 
 import (
-	domain "ws-server/internal/alerts/domain/repository"
+	"fmt"
 	"ws-server/internal/alerts/domain/entities"
+	domain "ws-server/internal/alerts/domain/repository"
 )
 
 type ProcessAlertUseCase struct {
@@ -14,9 +15,25 @@ func NewProcessAlertUseCase(ws domain.WSNotifier) *ProcessAlertUseCase {
 }
 
 func (uc *ProcessAlertUseCase) Execute(senderID int, payload entities.AlertPayload) {
-	ids := make([]int, 0, len(payload.Users))
-	for _, u := range payload.Users {
-		ids = append(ids, u.UsuarioID)
+	payload.SenderID = senderID
+
+	networkIDs := make([]int, 0, len(payload.UsersNetwork))
+	for _, u := range payload.UsersNetwork {
+		networkIDs = append(networkIDs, u.UserID)
 	}
-	uc.wsHub.NotifyMultiple(ids, "NEARBY_ALERT", payload)
+	uc.wsHub.NotifyMultiple(networkIDs, "NEARBY_ALERT", map[string]interface{}{
+		"sender_id":   senderID,
+		"sender_name": payload.SenderName,
+		"message":     fmt.Sprintf("¡%s está en peligro y necesita ayuda! Ingresa a la aplicación para obtener más información", payload.SenderName),
+	})
+
+	familyIDs := make([]int, 0, len(payload.UsersFamily))
+	for _, u := range payload.UsersFamily {
+		familyIDs = append(familyIDs, u.UserID)
+	}
+	uc.wsHub.NotifyMultiple(familyIDs, "FAMILY_ALERT", map[string]interface{}{
+		"sender_id":   senderID,
+		"sender_name": payload.SenderName,
+		"message":     fmt.Sprintf("¡Tu familiar %s está en peligro! Ingresa a la aplicación para obtener más información", payload.SenderName),
+	})
 }
