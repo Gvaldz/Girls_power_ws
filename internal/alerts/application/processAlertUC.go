@@ -24,6 +24,8 @@ func (uc *ProcessAlertUseCase) Execute(senderID int, payload entities.AlertPaylo
 	uc.wsHub.NotifyMultiple(networkIDs, "NEARBY_ALERT", map[string]interface{}{
 		"sender_id":   senderID,
 		"sender_name": payload.SenderName,
+		"latitude":    payload.Latitude,
+		"longitude":   payload.Longitude,
 		"message":     fmt.Sprintf("¡%s está en peligro y necesita ayuda! Ingresa a la aplicación para obtener más información", payload.SenderName),
 	})
 
@@ -34,6 +36,8 @@ func (uc *ProcessAlertUseCase) Execute(senderID int, payload entities.AlertPaylo
 	uc.wsHub.NotifyMultiple(familyIDs, "FAMILY_ALERT", map[string]interface{}{
 		"sender_id":   senderID,
 		"sender_name": payload.SenderName,
+		"latitude":    payload.Latitude,
+		"longitude":   payload.Longitude,
 		"message":     fmt.Sprintf("¡Tu familiar %s está en peligro! Ingresa a la aplicación para obtener más información", payload.SenderName),
 	})
 }
